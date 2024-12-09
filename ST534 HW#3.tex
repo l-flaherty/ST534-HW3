@@ -1,0 +1,331 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage[left=2.5cm,right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead[R]{Flaherty, \thepage}
+\renewcommand{\headrulewidth}{2pt}
+\setlength{\headheight}{15pt}
+\usepackage{lipsum}
+\usepackage{amsmath}
+\usepackage[makeroom]{cancel}
+\usepackage{cancel}
+\usepackage{array,polynom}
+\newcolumntype{C}{>{{}}c<{{}}} % for '+' and '-' symbols
+\newcolumntype{R}{>{\displaystyle}r} % automatic display-style math mode 
+\usepackage{xcolor}
+\newcommand\Ccancel[2][black]{\renewcommand\CancelColor{\color{#1}}\cancel{#2}}
+% Define a custom environment for examples with an indent
+
+\newenvironment{ex}{
+	\par\smallskip % Add some vertical space before the example
+	\noindent\textit{Example:\hspace{-0.25em}}
+	\leftskip=0.5em % Set the left indent to 1em (adjust as needed)
+}{
+	\par\smallskip % Add some vertical space after the example
+	\leftskip=0em % Reset the left indent
+}
+
+\newenvironment{nonex}{
+	\par\smallskip % Add some vertical space before the example
+	\noindent\textit{Non-example:\hspace{-0.25em}}
+	\leftskip=0.5em % Set the left indent to 1em (adjust as needed)
+}{
+	\par\smallskip % Add some vertical space after the example
+	\leftskip=0em % Reset the left indent
+}
+\newcommand{\mymatrix}[1]{
+	\renewcommand{\arraystretch}{0.5} % Adjust vertical spacing%
+	\setlength\arraycolsep{3pt}       % Adjust horizontal spacing%
+	\scalebox{0.90}{                  % Change font size%
+		$\begin{bmatrix}
+			#1
+		\end{bmatrix}$
+	}                   
+	\renewcommand{\arraystretch}{1.0} % Reset vertical spacing
+	\setlength\arraycolsep{6pt}       %Adjust horizontal spacing%
+}
+
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{mathrsfs}
+\usepackage[toc]{glossaries}
+\usepackage{amsthm}
+\usepackage{indentfirst}
+\usepackage[utf8]{inputenc}
+\usepackage[thinc]{esdiff}
+\usepackage{graphicx}
+\graphicspath{{./images/}}
+\usepackage{subfig}
+\usepackage{chngcntr}
+\usepackage{placeins}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{comment}
+\usepackage{sectsty}
+\sectionfont{\fontsize{15}{15}\selectfont}
+\usepackage{subcaption}
+\setlength\abovedisplayskip{0pt}
+\usepackage[hidelinks]{hyperref}
+\usepackage[nottoc,numbib]{tocbibind}
+\renewcommand{\qedsymbol}{\rule{0.7em}{0.7em}}
+\newcommand{\Mod}[1]{\ (\mathrm{mod}\ #1)}
+\counterwithin{figure}{section}
+\usepackage{centernot}
+\usepackage{enumitem}
+\theoremstyle{definition}
+\newtheorem{exmp}{Example}
+\newtheorem{nonexmp}{Non-Example}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}{Lemma}[theorem]
+\numberwithin{equation}{section}
+\newcommand{\mydef}[1]{(Definition \ref{#1}, Page \pageref{#1})}
+\newcommand{\mytheorem}[1]{(Theorem \ref{#1}, Page \pageref{#1})}
+\newcommand{\mylemma}[1]{(Lemma \ref{#1}, Page \pageref{#1})}
+\newcommand{\clickableword}[2]{\hyperref[#1]{#2}}
+
+%underscript for operations%
+\newcommand{\+}[1]{+_{\scalebox{.375}{#1}}}
+\newcommand{\mult}[1]{\cdot_{\scalebox{.375}{#1}}}
+
+%blackboard for letters%
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\V}{\mathbb{V}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\1}{\mathbbm{1}}
+
+\title{Time Series HW \# 3}
+\author{Liam Flaherty}
+\date{\parbox{\linewidth}{\centering%
+		Professor Martin\endgraf\bigskip
+		NCSU: ST546-001\endgraf\bigskip
+		October 2, 2024 \endgraf}}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\newpage\clearpage\noindent
+
+
+\noindent\textbf{1) \boldmath{Consider the following models: \vspace{\baselineskip}
+\begin{align*}
+	&A: (1-B)\tilde{Z}_t=(1-1.5B)a_t\\
+	&B: (1-0.8B)\tilde{Z}_t=(1-0.5B)a_t\\
+	&C: (1-1.1B+0.8B^2)\tilde{Z}_t=(1-1.7B+0.72B^2)a_t\\
+	&D: (1-0.6B)\tilde{Z}_t=(1-1.2B+0.2B^2)a_t
+\end{align*}}}
+
+\vspace{\baselineskip}
+\noindent\textbf{\boldmath{a. Verify whether or not the model for $Z_t$ is stationary and/or invertible.}}
+\vspace{\baselineskip}
+
+An ARMA model is stationary when all the roots of it's AR polynomial lie outside the complex unit circle. From inspection, that means models B and D are stationary. We can find the roots of the AR polynomial for model C as $\frac{1.1 \pm \sqrt{1.1^2-4(0.8)(1)}}{2(0.8)}=\frac{1.1 \pm \sqrt{-1.99}}{1.6}=\frac{11}{16} \pm \frac{i\sqrt{1.99}}{1.6}$ and so the complex modulus is $\sqrt{\frac{121}{256}+\frac{199}{256}}>\sqrt{1}=1$, which means model C is also stationary. All told, models B, C, and D are stationary.
+\vspace{\baselineskip}
+
+An ARMA model is invertible if all the roots of it's MA polynomial lie outside the complex unit circle. From inspection, that means model B is invertible. We can find the roots of the MA polynomial for model C as $\frac{1.7 \pm \sqrt{1.7^2-4(0.72)(1)}}{2(0.72)}=\frac{1.7 \pm \sqrt{2.89-2.88}}{1.44}=\frac{1.7 \pm 0.1}{1.44}>1$ and so model C is also invertible. We can find the roots of the MA polynomial for model D as $\frac{1.2 \pm \sqrt{1.2^2-4(0.2)(1)}}{2(0.2)}=\frac{1.2 \pm 0.8}{0.4}$; one of the roots lies on the unit circle and so model D is not invertible. All told, models B and C are invertible.
+
+\newpage
+\noindent\textbf{\boldmath{b. Express the model as an infinite MA if the process is stationary.}}
+\vspace{\baselineskip}
+
+We equate the coefficients of the backshift operator to get the expression. In the case of Model B, we have:
+
+\vspace{-0.5cm}
+\begin{align*}
+	(1-0.8B)\tilde{Z}_t&=(1-0.5B)a_t\\
+	(1-0.8B)\left(1+\psi_1B+\psi_2B^2+\cdots\right)a_t&=(1-0.5B)a_t\\
+\end{align*}
+\vspace{-1.0cm}
+
+And so:
+
+\vspace{-0.5cm}
+\begin{align*}
+	&\psi_1B-0.8B=-0.5B \implies \psi_1=0.3\\
+	&\psi_2B^2-0.8\psi_1B^2=0B^2 \implies \psi_2=0.24\\
+	&\psi_3B^3-0.8\psi_2B^3=0B^3 \implies \psi_3=0.8(0.24)
+\end{align*}
+
+Continuing in this fashion, we have: $\psi_{B_k}=\begin{cases}
+	0.3, &\text{$k=1$}\\
+	0.8(0.3)^{k-1}, &\text{$k>1$}
+\end{cases}$
+\vspace{\baselineskip}
+\vspace{\baselineskip}
+\vspace{\baselineskip}
+
+
+In the case of model C, we have:
+
+\vspace{-0.5cm}
+\begin{align*}
+	&(1-1.1B+0.8B^2)\tilde{Z}_t=(1-1.7B+0.72B^2)a_t\\
+	&(1-1.1B+0.8B^2)\left(1+\psi_1B+\psi_2B^2+\cdots\right)=(1-1.7B+0.72B^2)a_t
+\end{align*}
+\vspace{-0.5cm}
+
+And so:
+
+\vspace{-0.5cm}
+\begin{align*}
+	&\psi_1B-1.1B=-1.7B \implies \psi_1=-0.6\\
+	&\psi_2B^2-1.1\psi_1B^2+0.8B^2=0.72B^2 \implies \psi_2=0.72+(1.1 \cdot -0.6)-0.8=-0.74\\
+	&\psi_3B^3-1.1\psi_2B^3+0.8\psi_1B^3=0B^3 \implies \psi_3=1.1(-0.74)-0.8(-0.6)
+\end{align*}
+\vspace{-0.5cm}
+
+Continuing in this way, we achieve the recursion $\psi_{C_k}=1.1(\psi_{C_{k-1}})-0.8(\psi_{C_{k-2}})$ for $k\geq 3$ where $\psi_{C_{k_1}}=-0.6$ and $\psi_{C_{k_2}}=-0.74$.
+\vspace{\baselineskip}
+\vspace{\baselineskip}
+\vspace{\baselineskip}
+
+
+
+In the case of model D, we have:
+
+\vspace{-0.5cm}
+\begin{align*}
+	&(1-0.6B)\tilde{Z}_t=(1-1.2B+0.2B^2)a_t\\
+	&(1-0.6B)\left(1+\psi_1B+\psi_2B^2+\cdots\right)=(1-1.2B+0.2B^2)a_t
+\end{align*}
+\vspace{-0.5cm}
+ 
+ And so:
+ 
+ \vspace{-0.5cm}
+ \begin{align*}
+ 	&\psi_1B-0.6B=-1.2B \implies \psi_1=-0.6\\
+ 	&\psi_2B^2-0.6\psi_1B^2=0.2B^2 \implies \psi_2=0.2+0.6(-0.6)=-0.16\\
+ 	&\psi_3B^3-0.6\psi_2B^3=0 \implies \psi_3=0.6(-0.16)
+ \end{align*}
+\vspace{-0.5cm}
+
+Continuing in this way, we see $\psi_{D_k}=0.6^{k-2}(-0.16)$ for $k \geq 3$ while $\psi_{D_1}=-0.6$ and $\psi_{D_2}=-0.16$.
+
+
+
+\newpage
+\noindent\textbf{\boldmath{c. Express the model as an infinite AR representation if the process is invertible.}}
+\vspace{\baselineskip}
+
+We use the same strategy of equating coefficients. In the case of model B, we have:
+
+\vspace{-0.5cm}
+\begin{align*}
+	&(1-0.8B)\tilde{Z}_t=(1-0.5B)a_t\\
+	&(1-0.8B)\tilde{Z}_t=(1-0.5B)(1+\pi_1B+\pi_2B^2+\cdots)\tilde{Z}_t
+\end{align*}
+\vspace{-0.5cm}
+
+And so:
+
+\vspace{-0.5cm}
+\begin{align*}
+	&-0.8B=\pi_1B-0.5B \implies \pi_1=-0.3B\\
+	&0=\pi_2B^2-0.5\pi_1B^2 \implies \pi_2=(0.5)(-0.3)
+\end{align*}
+\vspace{-0.5cm}
+
+Continuing in this way, we have $\pi_{B_1}=-0.3$ and $\pi_{B_k}=0.5\pi_{B_{k-1}}$ for $k \geq 2$.
+\vspace{\baselineskip}
+\vspace{\baselineskip}
+\vspace{\baselineskip}
+
+
+
+In the case of model C, we have:
+
+\vspace{-0.5cm}
+\begin{align*}
+	&(1-1.1B+0.8B^2)\tilde{Z}_t=(1-1.7B+0.72B^2)a_t\\
+	&(1-1.1B+0.8B^2)\tilde{Z}_t=(1-1.7B+0.72B^2)(1+\pi_1B+\pi_2B^2+\cdots)\tilde{Z}_t
+\end{align*}
+\vspace{-0.5cm}
+
+And so:
+\vspace{-0.5cm}
+\begin{align*}
+	&-1.1B=\pi_1B-1.7B \implies \pi_1=0.6\\
+	&0.8B^2=\pi_2B^2-1.7\pi_1B^2 +0.72B^2 \implies \pi_2=0.8-0.72+1.7(0.6)=1.1\\
+	&0=\pi_3B^3-1.7\pi_2B^3++0.72\pi_1B^3 \implies \pi_3=1.7(1.1)+0.72(0.6)=2.302
+\end{align*}
+\vspace{-0.5cm}
+
+Continuing in this fashion, we see $\pi_{C_k}=\begin{cases}
+	0.6, &\text{$k=1$}\\
+	1.1, &\text{$k=2$}\\
+	1.7\pi_{C_{k-1}}-0.72\pi_{C_{k-2}}, &\text{$k \geq 3$}
+\end{cases}$
+
+
+
+
+\newpage
+\noindent\textbf{\boldmath{2) Consider the model $\tilde{Z}_t=0.3\tilde{Z}_{t-1}+0.34\tilde{Z}_{t-2}-0.12\tilde{Z}_{t-3}+a_t-0.7a_{t-1}+0.12a_{t-2}$. Determine whether or not the model is in reduced form, and if it is not, find the reduced form.}}
+\vspace{\baselineskip}
+
+The model is in reduced form if the AR and MA polynomials share no common factors. We go directly for the definition. The model is $(1-0.3B-0.34B^2+0.12B^3)\tilde{Z}_t=(1-0.7B+0.12B^2)a_t$. The quadratic factors as $(1-0.4B)(1-0.3B)$. Dividing the first factor into the cubic, we see $(0.12B^3-0.34B^2-0.3B+1)=(1-0.4B)(-0.3B^2+0.1B+1)$. Then we can write our model as $(-0.3B^2+0.1B+1)\widetilde{Z}_t=(1-0.3B)a_t$.
+
+
+
+
+\newpage
+\noindent\textbf{\boldmath{3) Consider the model $(1-B)^2Z_t=(1-0.3B-0.5B^2)a_t$.}}
+
+\vspace{\baselineskip}
+\noindent\textbf{\boldmath{a. Is the model for $Z_t$ a stationary model? Why or why not?}}
+\vspace{\baselineskip}
+
+$Z_t$ is not stationary since it's AR model has two roots the lie \textit{on} the complex unit circle.
+
+
+
+\vspace{\baselineskip}
+\noindent\textbf{\boldmath{b. Is the model for $W_t=(1-B)^2Z_t$ a stationary model? Why or why not?}}
+\vspace{\baselineskip}
+
+$W_t$ is stationary since it is a finite MA model, and finite MA's are always stationary.
+
+
+\vspace{\baselineskip}
+\noindent\textbf{\boldmath{c. Determine the autocorrelation function for $W_t$.}}
+\vspace{\baselineskip}
+
+The autocovariance function is $\E(W_{t}W_{t-k})$:
+
+\vspace{-0.5cm}
+\begin{align*}
+	\E(W_tW_{t-k})=&\E\left((a_t-0.3a_{t-1}-0.5a_{t-2})(a_{t-k}-0.3a_{t-k-1}-0.5a_{t-k-2})\right)\\
+	=&\E(a_ta_{t-k}) -0.3\E(a_ta_{t-k-1})-0.5\E(a_ta_{t-k-2})\\
+	&-0.3\E(a_{t-1}a_{t-k})+0.09\E(a_{t-1}a_{t-k-1})+0.15\E(a_{t-1}a_{t-k-2})\\
+	&-0.5\E(a_{t-2}a_{t-k})+0.15\E(a_{t-2}a_{t-k-1})+0.25\E(a_{t-2}a_{t-k-2})
+\end{align*}
+
+By the properties of white noise, $\E(a_{t}a_{t-k})=\begin{cases}
+	\sigma_a^2, &\text{$k=0$}\\
+	0, &\text{$k>0$}
+\end{cases}$. So:
+
+\begin{align*}
+	\gamma_0&=\sigma_a^2(1+0.09+0.25)=1.34\sigma_a^2\\ \gamma_1&=\sigma_a^2(-0.3+0.15)=-0.15\sigma_a^2\\
+	\gamma_2&=\sigma_a^2(-0.5)=-0.5\sigma_a^2\\
+	\gamma_3&=\sigma_a^2()\\
+	\gamma_4&=0
+\end{align*} . Dividing by $\gamma_0$ gives us the correlation function (here $s>2$):
+
+\begin{align*}
+	\rho_0&=1\\
+	\rho_1&=\frac{-0.15}{1.34}\approx -0.11\\
+	\rho_2&=\frac{-0.5}{1.34}\approx -0.37\\
+	\rho_{s}&=0
+\end{align*}
+
+
+\end{document}
